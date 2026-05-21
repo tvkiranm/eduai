@@ -46,4 +46,9 @@ export class CreateCourseDto {
   @IsOptional()
   @IsEnum(CourseStatus)
   status?: CourseStatus;
+
+  @ApiProperty({ example: 'teacher-user-uuid', required: false })
+  @IsOptional()
+  @IsUUID()
+  teacherId?: string;
 }

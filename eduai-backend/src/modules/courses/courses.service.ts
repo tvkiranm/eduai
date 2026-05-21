@@ -1,10 +1,11 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, QueryFailedError, Repository } from 'typeorm';
 
 import { User, UserRole } from '../users/entities/user.entity';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -15,17 +16,42 @@ export class CoursesService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(dto: CreateCourseDto, user: User): Promise<Course> {
+    let teacherId = user.id;
+
+    if (user.role === UserRole.ADMIN) {
+      if (!dto.teacherId) {
+        throw new BadRequestException(
+          'Please assign a teacher for this course',
+        );
+      }
+
+      const teacher = await this.userRepository.findOne({
+        where: {
+          id: dto.teacherId,
+          role: UserRole.TEACHER,
+          isActive: true,
+        },
+      });
+
+      if (!teacher) {
+        throw new BadRequestException('Invalid or inactive teacher selected');
+      }
+
+      teacherId = teacher.id;
+    }
+
     const course = this.courseRepository.create({
       ...dto,
-      teacherId: user.id,
+      teacherId,
     });
 
     return this.courseRepository.save(course);
   }
-
   async findAll(): Promise<Course[]> {
     return this.courseRepository.find({
       //   relations: ['category', 'teacher'],
@@ -57,9 +83,25 @@ export class CoursesService {
       throw new ForbiddenException('You can update only your own course');
     }
 
+    if (dto.slug) {
+      const existing = await this.courseRepository.findOne({
+        where: { slug: dto.slug, id: Not(id) },
+        select: { id: true },
+      });
+
+      if (existing) {
+        throw new BadRequestException('Course slug already exists');
+      }
+    }
+
     Object.assign(course, dto);
 
-    return this.courseRepository.save(course);
+    try {
+      return await this.courseRepository.save(course);
+    } catch (error) {
+      this.throwIfUniqueSlugViolation(error);
+      throw error;
+    }
   }
 
   async remove(id: string, user: User): Promise<{ message: string }> {
@@ -72,5 +114,20 @@ export class CoursesService {
     await this.courseRepository.remove(course);
 
     return { message: 'Course deleted successfully' };
+  }
+
+  private throwIfUniqueSlugViolation(error: unknown): void {
+    if (!(error instanceof QueryFailedError)) return;
+    const driverError = error.driverError as {
+      code?: string;
+      detail?: unknown;
+    };
+    if (driverError?.code !== '23505') return;
+
+    const detail =
+      typeof driverError.detail === 'string' ? driverError.detail : '';
+    if (detail.includes('(slug)')) {
+      throw new BadRequestException('Course slug already exists');
+    }
   }
 }

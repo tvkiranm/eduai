@@ -7,6 +7,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CoursesModule } from './modules/courses/courses.module';
 import { MediaModule } from './modules/media/media.module';
+import { TeacherModule } from './modules/teacher/teacher.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { StudentModule } from './modules/student/student.module';
 
 @Module({
   imports: [
@@ -31,6 +34,9 @@ import { MediaModule } from './modules/media/media.module';
     CategoriesModule,
     CoursesModule,
     MediaModule,
+    TeacherModule,
+    AdminModule,
+    StudentModule,
   ],
 })
 export class AppModule {}
