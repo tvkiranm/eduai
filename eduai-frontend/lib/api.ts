@@ -13,8 +13,7 @@ import type {
 } from "@/lib/types";
 import { getToken } from "@/lib/storage";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:4005";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -40,7 +39,8 @@ export function getErrorMessage(error: unknown): string {
     const data = error.response?.data as ApiError | undefined;
     if (typeof data?.message === "string") return data.message;
     if (Array.isArray(data?.message)) return data.message.join(", ");
-    if (error.response?.status === 500) return "Something went wrong. Try again.";
+    if (error.response?.status === 500)
+      return "Something went wrong. Try again.";
     return error.message;
   }
   if (error instanceof Error) return error.message;
@@ -59,7 +59,10 @@ export const api = {
       password: string;
       role: UserRole;
     }) {
-      const res = await apiClient.post<RegisterResponse>("/auth/register", input);
+      const res = await apiClient.post<RegisterResponse>(
+        "/auth/register",
+        input,
+      );
       return res.data;
     },
     async profile() {
@@ -77,14 +80,17 @@ export const api = {
       const res = await apiClient.post<Category>("/categories", input);
       return res.data;
     },
-    async update(id: string, input: Partial<{ name: string; slug: string; isActive: boolean }>) {
+    async update(
+      id: string,
+      input: Partial<{ name: string; slug: string; isActive: boolean }>,
+    ) {
       const res = await apiClient.patch<Category>(`/categories/${id}`, input);
       return res.data;
     },
     async remove(id: string) {
-      const res = await apiClient.delete<ApiMessage<unknown> | { message: string }>(
-        `/categories/${id}`,
-      );
+      const res = await apiClient.delete<
+        ApiMessage<unknown> | { message: string }
+      >(`/categories/${id}`);
       return res.data;
     },
   },
@@ -139,7 +145,13 @@ export const api = {
       form.append("file", file);
       const res = await apiClient.post<{
         message: string;
-        data: { url: string; publicId: string; format: string; resourceType: string; size: number };
+        data: {
+          url: string;
+          publicId: string;
+          format: string;
+          resourceType: string;
+          size: number;
+        };
       }>("/media/upload", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -162,15 +174,20 @@ export const api = {
 
   teacher: {
     async dashboard() {
-      const res = await apiClient.get<TeacherDashboardResponse>("/teacher/dashboard");
+      const res =
+        await apiClient.get<TeacherDashboardResponse>("/teacher/dashboard");
       return res.data;
     },
     async myCourses() {
-      const res = await apiClient.get<ApiMessage<Course[]>>("/teacher/my-courses");
+      const res = await apiClient.get<ApiMessage<Course[]>>(
+        "/teacher/my-courses",
+      );
       return res.data;
     },
     async courseDetails(courseId: string) {
-      const res = await apiClient.get<ApiMessage<Course>>(`/teacher/courses/${courseId}`);
+      const res = await apiClient.get<ApiMessage<Course>>(
+        `/teacher/courses/${courseId}`,
+      );
       return res.data;
     },
     async courseStudents(courseId: string) {
@@ -187,7 +204,12 @@ export const api = {
     },
     async courseStats(courseId: string) {
       const res = await apiClient.get<
-        ApiMessage<{ courseId: string; title: string; status: string; totalStudents: number }>
+        ApiMessage<{
+          courseId: string;
+          title: string;
+          status: string;
+          totalStudents: number;
+        }>
       >(`/teacher/courses/${courseId}/stats`);
       return res.data;
     },
@@ -195,17 +217,20 @@ export const api = {
 
   student: {
     async dashboard() {
-      const res = await apiClient.get<StudentDashboardResponse>("/student/dashboard");
+      const res =
+        await apiClient.get<StudentDashboardResponse>("/student/dashboard");
       return res.data;
     },
     async myCourses() {
-      const res = await apiClient.get<ApiMessage<Enrollment[]>>("/student/my-courses");
+      const res = await apiClient.get<ApiMessage<Enrollment[]>>(
+        "/student/my-courses",
+      );
       return res.data;
     },
     async courseDetail(courseId: string) {
-      const res = await apiClient.get<ApiMessage<{ enrollment: Enrollment; course: Course }>>(
-        `/student/courses/${courseId}`,
-      );
+      const res = await apiClient.get<
+        ApiMessage<{ enrollment: Enrollment; course: Course }>
+      >(`/student/courses/${courseId}`);
       return res.data;
     },
   },
@@ -242,9 +267,9 @@ export const api = {
       return res.data;
     },
     async toggleUserStatus(id: string) {
-      const res = await apiClient.patch<ApiMessage<{ id: string; isActive: boolean }>>(
-        `/admin/users/${id}/toggle-status`,
-      );
+      const res = await apiClient.patch<
+        ApiMessage<{ id: string; isActive: boolean }>
+      >(`/admin/users/${id}/toggle-status`);
       return res.data;
     },
   },
@@ -253,4 +278,3 @@ export const api = {
 export function isApiError(error: unknown): error is AxiosError<ApiError> {
   return axios.isAxiosError(error);
 }
-

@@ -23,7 +23,12 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   refreshProfile: () => Promise<void>;
   login: (input: { email: string; password: string }) => Promise<void>;
-  register: (input: { fullName: string; email: string; password: string; role: UserRole }) => Promise<void>;
+  register: (input: {
+    fullName: string;
+    email: string;
+    password: string;
+    role: UserRole;
+  }) => Promise<void>;
   logout: () => void;
 };
 
@@ -62,18 +67,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.token]);
 
-  const login = useCallback(async (input: { email: string; password: string }) => {
-    const res = await api.auth.login(input);
-    setToken(res.data.accessToken);
-    setUser(res.data.user);
-    setState({ status: "ready", token: res.data.accessToken, user: res.data.user });
-  }, []);
+  const login = useCallback(
+    async (input: { email: string; password: string }) => {
+      const res = await api.auth.login(input);
+      setToken(res.data.accessToken);
+      setUser(res.data.user);
+      setState({
+        status: "ready",
+        token: res.data.accessToken,
+        user: res.data.user,
+      });
+    },
+    [],
+  );
 
   const register = useCallback(
-    async (input: { fullName: string; email: string; password: string; role: UserRole }) => {
+    async (input: {
+      fullName: string;
+      email: string;
+      password: string;
+      role: UserRole;
+    }) => {
       await api.auth.register(input);
       // Auto-login after successful registration
-      await login({ email: input.email, password: input.password });
+      // await login({ email: input.email, password: input.password });
     },
     [login],
   );
