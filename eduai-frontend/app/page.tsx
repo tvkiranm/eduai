@@ -10,6 +10,7 @@ import {
 
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,25 +20,61 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FeaturedCourses } from "@/components/courses/featured-courses";
 
 const features = [
   {
-    title: "Role-based portals",
+    title: "AI‑Powered Learning",
     description:
-      "Dedicated dashboards for Admin, Teacher, and Student with clear permissions.",
+      "Get personalized recommendations and smart learning paths.",
+    icon: Sparkles,
+  },
+  {
+    title: "Expert Instructors",
+    description:
+      "Learn from industry experts and top educators.",
     icon: Users,
   },
   {
-    title: "Course creation + management",
+    title: "Flexible Learning",
     description:
-      "Create, edit, publish courses, and manage thumbnails via Media upload.",
+      "Study at your own pace, anytime and anywhere.",
     icon: Video,
   },
   {
-    title: "Fast, modern UX",
+    title: "Certificates",
     description:
-      "Responsive UI with reusable components, loading states, and clean layouts.",
-    icon: Sparkles,
+      "Earn recognized certificates to boost your career.",
+    icon: CheckCircle2,
+  },
+] as const;
+
+const categories = [
+  { title: "Development", desc: "120+ Courses" },
+  { title: "Design", desc: "80+ Courses" },
+  { title: "Business", desc: "100+ Courses" },
+  { title: "Marketing", desc: "70+ Courses" },
+  { title: "AI & Data Science", desc: "90+ Courses" },
+] as const;
+
+const testimonials = [
+  {
+    quote:
+      "EduAI transformed the way I learn. The courses are practical and the platform is smooth.",
+    name: "Priya Sharma",
+    role: "Frontend Developer",
+  },
+  {
+    quote:
+      "The UI is beautiful and the learning path feels super structured. Highly recommended.",
+    name: "Rahul Verma",
+    role: "Product Manager",
+  },
+  {
+    quote:
+      "Great content and an amazing support experience. The course cards and dashboard are very clean.",
+    name: "Ananya Singh",
+    role: "UI/UX Designer",
   },
 ] as const;
 
@@ -79,192 +116,204 @@ export default function LandingPage() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="border-b border-white/10">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-16 md:grid-cols-2 md:py-24">
+      <section className="border-b border-[color:var(--color-border)]">
+        <Container className="grid grid-cols-1 gap-10 py-14 md:grid-cols-2 md:py-20">
           <div className="flex flex-col justify-center">
             <Badge variant="secondary" className="w-fit">
-              Modern web education platform
+              Beautiful landing page + powerful dashboard
             </Badge>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-zinc-50 md:text-5xl">
-              Build courses. Teach better. Learn faster.
+            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-[color:var(--color-foreground)] md:text-5xl">
+              Learn smarter with{" "}
+              <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+                AI‑Powered
+              </span>{" "}
+              education
             </h1>
-            <p className="mt-4 text-lg text-white/70">
-              EduAI provides role-based dashboards, course management,
-              enrollments, and media uploads—integrated with your existing
-              backend APIs.
+            <p className="mt-4 text-lg text-[color:var(--color-muted-foreground)]">
+              Discover high-quality courses, personalized learning paths, and AI tools
+              to help you achieve your goals faster.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
                 <Link href="/auth/sign-up">
-                  Get started <ArrowRight className="h-4 w-4" />
+                  Get Started Free <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/auth/join-teacher">Join as Teacher</Link>
+                <Link href="/student/browse">Explore Courses</Link>
               </Button>
             </div>
-            <div className="mt-6 flex flex-wrap gap-4 text-sm text-white/70">
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-[color:var(--color-muted-foreground)]">
               <span className="inline-flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> Admin,
-                Teacher, Student roles
+                <CheckCircle2 className="h-4 w-4 text-indigo-600" /> Role-based portals
               </span>
               <span className="inline-flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400" /> JWT auth +
-                role redirects
+                <CheckCircle2 className="h-4 w-4 text-indigo-600" /> Modern UI components
               </span>
             </div>
           </div>
 
           <div className="flex items-center justify-center">
-            <div className="w-full rounded-3xl eduai-glass p-6">
-              <div className="grid gap-4">
-                <Card className="eduai-glow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-base">
-                          Student profile
-                        </CardTitle>
-                        <CardDescription>Personalized roadmap</CardDescription>
-                      </div>
-                      <Badge>Active</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-xl bg-white/5 p-3">
-                      <div className="text-xs text-white/60">Track</div>
-                      <div className="mt-1 font-semibold text-zinc-50">
-                        Data Scientist
-                      </div>
-                    </div>
-                    <div className="rounded-xl bg-white/5 p-3">
-                      <div className="text-xs text-white/60">Progress</div>
-                      <div className="mt-1 font-semibold text-zinc-50">35%</div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">
-                      Your smart roadmap
-                    </CardTitle>
-                    <CardDescription>
-                      Step-by-step learning plan
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {[
-                      {
-                        title: "Python basics",
-                        desc: "Syntax, data types, and problem solving.",
-                        status: "Active",
-                      },
-                      {
-                        title: "SQL + databases",
-                        desc: "Queries, joins, and schema design.",
-                        status: "Locked",
-                      },
-                      {
-                        title: "ML essentials",
-                        desc: "Core concepts and model training.",
-                        status: "Locked",
-                      },
-                    ].map((step) => (
-                      <div
-                        key={step.title}
-                        className="flex items-start justify-between gap-4 rounded-2xl bg-white/5 p-4"
-                      >
+            <div className="relative w-full max-w-xl">
+              <div className="absolute -inset-6 rounded-[32px] bg-gradient-to-br from-indigo-600/10 via-violet-600/10 to-fuchsia-600/10 blur-2xl" />
+              <div className="relative rounded-[32px] border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-6 shadow-xl shadow-indigo-500/10">
+                <div className="grid gap-4">
+                  <Card className="eduai-glow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-semibold text-zinc-50">
-                            {step.title}
-                          </div>
-                          <div className="mt-1 text-sm text-white/65">
-                            {step.desc}
-                          </div>
+                          <CardTitle className="text-base">AI Tutor</CardTitle>
+                          <CardDescription>24/7 Support</CardDescription>
                         </div>
-                        {step.status === "Active" ? (
-                          <Badge variant="secondary">Active</Badge>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-white/55">
-                            <Lock className="h-3.5 w-3.5" /> Locked
-                          </span>
-                        )}
+                        <Badge>Online</Badge>
                       </div>
-                    ))}
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="rounded-xl bg-[color:var(--color-muted)] p-3">
+                        <div className="text-xs text-[color:var(--color-muted-foreground)]">Track</div>
+                        <div className="mt-1 font-semibold text-[color:var(--color-foreground)]">
+                          Data Science
+                        </div>
+                      </div>
+                      <div className="rounded-xl bg-[color:var(--color-muted)] p-3">
+                        <div className="text-xs text-[color:var(--color-muted-foreground)]">Progress</div>
+                        <div className="mt-1 font-semibold text-[color:var(--color-foreground)]">68%</div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-                    <div className="rounded-2xl bg-white/5 p-4">
-                      <div className="text-xs font-semibold text-white/70">
-                        Progress tracker
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base">Personalized learning path</CardTitle>
+                      <CardDescription>Step-by-step roadmap</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {[
+                        { title: "Python basics", desc: "Syntax, data types, and practice.", status: "Active" },
+                        { title: "SQL + databases", desc: "Queries, joins, schemas.", status: "Locked" },
+                        { title: "ML essentials", desc: "Core concepts and training.", status: "Locked" },
+                      ].map((step) => (
+                        <div
+                          key={step.title}
+                          className="flex items-start justify-between gap-4 rounded-2xl bg-[color:var(--color-muted)] p-4"
+                        >
+                          <div>
+                            <div className="font-semibold text-[color:var(--color-foreground)]">
+                              {step.title}
+                            </div>
+                            <div className="mt-1 text-sm text-[color:var(--color-muted-foreground)]">
+                              {step.desc}
+                            </div>
+                          </div>
+                          {step.status === "Active" ? (
+                            <Badge variant="secondary">Active</Badge>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-xs text-[color:var(--color-muted-foreground)]">
+                              <Lock className="h-3.5 w-3.5" /> Locked
+                            </span>
+                          )}
+                        </div>
+                      ))}
+
+                      <div className="rounded-2xl bg-[color:var(--color-muted)] p-4">
+                        <div className="text-xs font-semibold text-[color:var(--color-muted-foreground)]">
+                          Progress tracker
+                        </div>
+                        <div className="mt-2 h-2 w-full rounded-full bg-black/5">
+                          <div className="h-2 w-[68%] rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600" />
+                        </div>
+                        <div className="mt-2 text-xs text-[color:var(--color-muted-foreground)]">
+                          Current step: 68% complete
+                        </div>
                       </div>
-                      <div className="mt-2 h-2 w-full rounded-full bg-white/10">
-                        <div className="h-2 w-[35%] rounded-full bg-gradient-to-r from-cyan-400/90 via-fuchsia-400/90 to-indigo-400/90" />
-                      </div>
-                      <div className="mt-2 text-xs text-white/60">
-                        Current step: 35% complete
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Intro */}
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
+      <section id="about" className="py-14">
+        <Container>
+        <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-foreground)]">
           Platform introduction
         </h2>
-        <p className="mt-3 max-w-3xl text-white/70">
+        <p className="mt-3 max-w-3xl text-[color:var(--color-muted-foreground)]">
           EduAI is a clean, scalable UI that connects to your NestJS backend
           APIs. It handles authentication, role-based navigation, and modern
           dashboard UX.
         </p>
+        </Container>
       </section>
 
-      {/* Features / Instructions */}
-      <section id="features" className="border-y border-white/10">
-        <div className="mx-auto max-w-6xl px-4 py-14">
+      <FeaturedCourses />
+
+      {/* Popular categories */}
+      <section className="py-14">
+        <Container>
           <div className="flex items-end justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
-                Features & instructions
+              <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-foreground)]">
+                Popular categories
               </h2>
-              <p className="mt-2 text-white/70">
-                Everything you need to run an education platform.
+              <p className="mt-2 text-[color:var(--color-muted-foreground)]">
+                Start with a category that matches your goals.
               </p>
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {categories.map((c) => (
+              <Card key={c.title} className="hover:eduai-glow transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-base">{c.title}</CardTitle>
+                  <CardDescription>{c.desc}</CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Why choose */}
+      <section id="features" className="border-y border-[color:var(--color-border)]">
+        <Container className="py-14">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-foreground)]">Why Choose EduAI?</h2>
+              <p className="mt-2 text-[color:var(--color-muted-foreground)]">A modern learning experience built for outcomes.</p>
             </div>
             <Button asChild variant="outline" className="hidden sm:inline-flex">
               <Link href="/auth/sign-in">Sign in</Link>
             </Button>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-4">
             {features.map((f) => {
               const Icon = f.icon;
               return (
                 <Card key={f.title}>
                   <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-zinc-50">
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <CardTitle className="text-base">{f.title}</CardTitle>
-                    </div>
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--color-muted)] text-[color:var(--color-foreground)]">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <CardTitle className="mt-3 text-base">{f.title}</CardTitle>
                     <CardDescription>{f.description}</CardDescription>
                   </CardHeader>
                 </Card>
               );
             })}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* How it works */}
-      <section id="how" className="mx-auto max-w-6xl px-4 py-14">
-        <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
+      <section id="how" className="py-14">
+        <Container>
+        <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-foreground)]">
           How it works
         </h2>
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -294,17 +343,18 @@ export default function LandingPage() {
             </Card>
           ))}
         </div>
+        </Container>
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="border-t border-white/10">
-        <div className="mx-auto max-w-6xl px-4 py-14">
+      <section id="pricing" className="border-t border-[color:var(--color-border)]">
+        <Container className="py-14">
           <div className="flex items-end justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
+              <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-foreground)]">
                 Subscription / pricing
               </h2>
-              <p className="mt-2 text-white/70">
+              <p className="mt-2 text-[color:var(--color-muted-foreground)]">
                 Choose a plan that fits your goals.
               </p>
             </div>
@@ -322,10 +372,10 @@ export default function LandingPage() {
                   <CardDescription>{p.desc}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 text-sm text-white/70">
+                  <ul className="space-y-2 text-sm text-[color:var(--color-muted-foreground)]">
                     {p.features.map((f) => (
                       <li key={f} className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />{" "}
+                        <CheckCircle2 className="h-4 w-4 text-indigo-600" />{" "}
                         {f}
                       </li>
                     ))}
@@ -353,18 +403,45 @@ export default function LandingPage() {
               </Card>
             ))}
           </div>
-        </div>
+        </Container>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-14">
+        <Container>
+          <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-foreground)]">
+            What our learners say
+          </h2>
+          <p className="mt-2 text-[color:var(--color-muted-foreground)]">
+            Trusted by learners who want real outcomes.
+          </p>
+          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+            {testimonials.map((t) => (
+              <Card key={t.name}>
+                <CardHeader>
+                  <CardDescription>“{t.quote}”</CardDescription>
+                  <div className="mt-4">
+                    <div className="text-sm font-semibold text-[color:var(--color-foreground)]">{t.name}</div>
+                    <div className="text-xs text-[color:var(--color-muted-foreground)]">{t.role}</div>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </Container>
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <div className="rounded-3xl eduai-glass p-8">
+      <section className="py-14">
+        <Container>
+        <div className="rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 p-[1px]">
+          <div className="rounded-3xl bg-[color:var(--color-card)] p-8">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <h3 className="text-xl font-semibold text-zinc-50">
+              <h3 className="text-xl font-semibold text-[color:var(--color-foreground)]">
                 Ready to teach on EduAI?
               </h3>
-              <p className="mt-2 text-white/70">
+              <p className="mt-2 text-[color:var(--color-muted-foreground)]">
                 Join as a teacher and publish your first course today.
               </p>
             </div>
@@ -375,6 +452,8 @@ export default function LandingPage() {
             </Button>
           </div>
         </div>
+        </div>
+        </Container>
       </section>
 
       <SiteFooter />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { api, getErrorMessage } from "@/lib/api";
+import { toSlug } from "@/lib/slug";
 import type { Category } from "@/lib/types";
 
 const schema = z.object({
@@ -26,6 +27,7 @@ type FormValues = z.infer<typeof schema>;
 export default function AdminCategoriesPage() {
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Category | null>(null);
+  const slugEditedRef = useRef(false);
 
   const categories = useQuery({
     queryKey: ["categories"],
@@ -41,11 +43,19 @@ export default function AdminCategoriesPage() {
     defaultValues: { name: "", slug: "" },
   });
 
+  const nameRegister = form.register("name");
+  const slugRegister = form.register("slug");
+
+  useEffect(() => {
+    slugEditedRef.current = false;
+  }, [editing?.id]);
+
   const create = useMutation({
     mutationFn: (values: FormValues) => api.categories.create(values),
     onSuccess: async () => {
       toast.success("Category created");
       form.reset();
+      slugEditedRef.current = false;
       await qc.invalidateQueries({ queryKey: ["categories"] });
     },
     onError: (e) => toast.error(getErrorMessage(e)),
@@ -57,6 +67,7 @@ export default function AdminCategoriesPage() {
       toast.success("Category updated");
       setEditing(null);
       form.reset();
+      slugEditedRef.current = false;
       await qc.invalidateQueries({ queryKey: ["categories"] });
     },
     onError: (e) => toast.error(getErrorMessage(e)),
@@ -95,14 +106,32 @@ export default function AdminCategoriesPage() {
             >
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" {...form.register("name")} />
+                <Input
+                  id="name"
+                  {...nameRegister}
+                  onChange={(e) => {
+                    nameRegister.onChange(e);
+                    if (editing) return;
+                    if (slugEditedRef.current && form.getValues("slug")) return;
+
+                    const next = toSlug(e.target.value);
+                    if (next) form.setValue("slug", next, { shouldValidate: true });
+                  }}
+                />
                 {form.formState.errors.name?.message ? (
                   <p className="text-sm text-red-400">{form.formState.errors.name.message}</p>
                 ) : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="slug">Slug</Label>
-                <Input id="slug" {...form.register("slug")} />
+                <Input
+                  id="slug"
+                  {...slugRegister}
+                  onChange={(e) => {
+                    slugEditedRef.current = true;
+                    slugRegister.onChange(e);
+                  }}
+                />
                 {form.formState.errors.slug?.message ? (
                   <p className="text-sm text-red-400">{form.formState.errors.slug.message}</p>
                 ) : null}
@@ -125,6 +154,7 @@ export default function AdminCategoriesPage() {
                     onClick={() => {
                       setEditing(null);
                       form.reset();
+                      slugEditedRef.current = false;
                     }}
                     disabled={update.isPending || create.isPending}
                   >
@@ -164,6 +194,7 @@ export default function AdminCategoriesPage() {
                               onClick={() => {
                                 setEditing(c);
                                 form.reset({ name: c.name, slug: c.slug });
+                                slugEditedRef.current = false;
                               }}
                             >
                               Edit

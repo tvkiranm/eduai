@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { z } from "zod";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api, getErrorMessage } from "@/lib/api";
+import { toSlug } from "@/lib/slug";
 import type { Course } from "@/lib/types";
 
 const schema = z.object({
@@ -40,6 +41,8 @@ export function CourseForm({
   onSubmit: (values: CourseFormValues) => Promise<void>;
   showAdminNote?: boolean;
 }) {
+  const slugEditedRef = useRef(false);
+
   const categories = useQuery({
     queryKey: ["categories"],
     queryFn: () => api.categories.list(),
@@ -58,6 +61,9 @@ export function CourseForm({
       thumbnailUrl: initial?.thumbnailUrl ?? undefined,
     },
   });
+
+  const titleRegister = form.register("title");
+  const slugRegister = form.register("slug");
 
   useEffect(() => {
     if (initial) {
@@ -87,6 +93,10 @@ export function CourseForm({
   const categoryId = useWatch({ control: form.control, name: "categoryId" });
   const status = useWatch({ control: form.control, name: "status" });
 
+  useEffect(() => {
+    slugEditedRef.current = false;
+  }, [mode, initial?.id]);
+
   async function handleSubmit(values: CourseFormValues) {
     try {
       await onSubmit(values);
@@ -99,7 +109,7 @@ export function CourseForm({
       <Card>
       <CardContent className="pt-6">
         {showAdminNote ? (
-          <div className="eduai-glass mb-4 rounded-xl border-dashed p-3 text-sm text-white/70">
+          <div className="eduai-glass mb-4 rounded-xl border-dashed p-3 text-sm text-[color:var(--color-muted-foreground)]">
             Note: The current backend assigns the teacher automatically from the logged-in user.
           </div>
         ) : null}
@@ -107,7 +117,18 @@ export function CourseForm({
         <form className="grid grid-cols-1 gap-6 md:grid-cols-2" onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="title">Title</Label>
-            <Input id="title" {...form.register("title")} />
+            <Input
+              id="title"
+              {...titleRegister}
+              onChange={(e) => {
+                titleRegister.onChange(e);
+                if (mode !== "create") return;
+                if (slugEditedRef.current && form.getValues("slug")) return;
+
+                const next = toSlug(e.target.value);
+                if (next) form.setValue("slug", next, { shouldValidate: true });
+              }}
+            />
             {form.formState.errors.title?.message ? (
               <p className="text-sm text-red-400">{form.formState.errors.title.message}</p>
             ) : null}
@@ -115,11 +136,18 @@ export function CourseForm({
 
           <div className="space-y-2">
             <Label htmlFor="slug">Slug</Label>
-            <Input id="slug" {...form.register("slug")} />
+            <Input
+              id="slug"
+              {...slugRegister}
+              onChange={(e) => {
+                slugEditedRef.current = true;
+                slugRegister.onChange(e);
+              }}
+            />
             {form.formState.errors.slug?.message ? (
               <p className="text-sm text-red-400">{form.formState.errors.slug.message}</p>
             ) : null}
-            <p className="text-xs text-white/65">
+            <p className="text-xs text-[color:var(--color-muted-foreground)]">
               Must be unique. Example: <code className="font-mono">react-js-master-course</code>
             </p>
           </div>
@@ -212,10 +240,10 @@ export function CourseForm({
               />
             </div>
             {upload.isPending ? (
-              <p className="text-sm text-white/70">Uploading thumbnail...</p>
+              <p className="text-sm text-[color:var(--color-muted-foreground)]">Uploading thumbnail...</p>
             ) : null}
             {thumbnailUrl ? (
-              <p className="text-xs text-white/65 break-all">Saved: {thumbnailUrl}</p>
+              <p className="text-xs text-[color:var(--color-muted-foreground)] break-all">Saved: {thumbnailUrl}</p>
             ) : null}
           </div>
 

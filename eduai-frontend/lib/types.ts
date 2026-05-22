@@ -16,7 +16,6 @@ export type ApiMessage<T> = {
 };
 
 export type LoginResponse = ApiMessage<{
-  accessToken: string;
   user: User;
 }>;
 
@@ -69,4 +68,3 @@ export type StudentDashboardResponse = ApiMessage<{
   totalEnrolledCourses: number;
   recentCourses: Enrollment[];
 }>;
-

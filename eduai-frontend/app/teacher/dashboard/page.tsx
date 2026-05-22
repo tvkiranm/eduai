@@ -43,13 +43,13 @@ export default function TeacherDashboardPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-white/65">Total courses</CardTitle>
+            <CardTitle className="text-sm text-[color:var(--color-muted-foreground)]">Total courses</CardTitle>
           </CardHeader>
           <CardContent className="text-2xl font-semibold">{data.totalCourses}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-white/65">Total students</CardTitle>
+            <CardTitle className="text-sm text-[color:var(--color-muted-foreground)]">Total students</CardTitle>
           </CardHeader>
           <CardContent className="text-2xl font-semibold">{data.totalStudents}</CardContent>
         </Card>

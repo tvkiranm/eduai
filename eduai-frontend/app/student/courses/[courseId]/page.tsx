@@ -42,24 +42,24 @@ export default function StudentCourseDetailPage() {
           <CardHeader>
             <CardTitle className="text-base">Course info</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-white/65">
+          <CardContent className="space-y-2 text-sm text-[color:var(--color-muted-foreground)]">
             <div>
-              <span className="font-medium text-zinc-50">Category:</span>{" "}
+              <span className="font-medium text-[color:var(--color-foreground)]">Category:</span>{" "}
               {course.category?.name ?? "-"}
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Teacher:</span>{" "}
+              <span className="font-medium text-[color:var(--color-foreground)]">Teacher:</span>{" "}
               {course.teacher?.fullName ?? "-"}
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Level:</span> {course.level}
+              <span className="font-medium text-[color:var(--color-foreground)]">Level:</span> {course.level}
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Status:</span>{" "}
+              <span className="font-medium text-[color:var(--color-foreground)]">Status:</span>{" "}
               <span className="capitalize">{course.status}</span>
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Enrolled at:</span>{" "}
+              <span className="font-medium text-[color:var(--color-foreground)]">Enrolled at:</span>{" "}
               {enrollment.createdAt ? new Date(enrollment.createdAt).toLocaleString() : "-"}
             </div>
           </CardContent>
@@ -75,10 +75,10 @@ export default function StudentCourseDetailPage() {
               <img
                 src={course.thumbnailUrl}
                 alt={course.title}
-                className="aspect-video w-full rounded-lg border border-white/10 object-cover"
+                className="aspect-video w-full rounded-lg border border-[color:var(--color-border)] object-cover"
               />
             ) : (
-              <div className="eduai-glass rounded-lg border-dashed p-6 text-sm text-white/65">
+              <div className="eduai-glass rounded-lg border-dashed p-6 text-sm text-[color:var(--color-muted-foreground)]">
                 No thumbnail
               </div>
             )}

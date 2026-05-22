@@ -1,4 +1,3 @@
-import axios, { AxiosError } from "axios";
 import type {
   ApiMessage,
   Category,
@@ -11,22 +10,6 @@ import type {
   User,
   UserRole,
 } from "@/lib/types";
-import { getToken } from "@/lib/storage";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-
-export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-apiClient.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 export type ApiError = {
   statusCode?: number;
@@ -34,24 +17,76 @@ export type ApiError = {
   error?: string;
 };
 
+export class ApiHttpError extends Error {
+  status: number;
+  data: ApiError | unknown;
+
+  constructor(status: number, message: string, data: ApiError | unknown) {
+    super(message);
+    this.status = status;
+    this.data = data;
+  }
+}
+
 export function getErrorMessage(error: unknown): string {
-  if (axios.isAxiosError(error)) {
-    const data = error.response?.data as ApiError | undefined;
+  if (error instanceof ApiHttpError) {
+    const data = error.data as ApiError | undefined;
     if (typeof data?.message === "string") return data.message;
     if (Array.isArray(data?.message)) return data.message.join(", ");
-    if (error.response?.status === 500)
-      return "Something went wrong. Try again.";
+    if (error.status === 401) return "Unauthorized. Please sign in again.";
+    if (error.status >= 500) return "Something went wrong. Try again.";
     return error.message;
   }
   if (error instanceof Error) return error.message;
   return "Something went wrong. Try again.";
 }
 
+const BFF_BASE = "/api/bff";
+
+function buildUrl(path: string) {
+  // In the browser, relative is correct. On the server, allow an absolute base if provided.
+  const base =
+    typeof window === "undefined"
+      ? (process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL ?? "").replace(/\/$/, "")
+      : "";
+  return `${base}${BFF_BASE}${path}`;
+}
+
+async function requestJson<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
+  const res = await fetch(buildUrl(path), {
+    credentials: "include",
+    cache: "no-store",
+    ...init,
+  });
+
+  const contentType = res.headers.get("content-type") ?? "";
+  const raw = await res.text();
+  const isJson = contentType.includes("application/json");
+  const parsed = isJson && raw ? (JSON.parse(raw) as unknown) : raw;
+
+  if (!res.ok) {
+    const data = parsed as ApiError | unknown;
+    const message =
+      typeof (data as ApiError | undefined)?.message === "string"
+        ? ((data as ApiError).message as string)
+        : res.statusText || "Request failed";
+    throw new ApiHttpError(res.status, message, data);
+  }
+
+  return parsed as T;
+}
+
 export const api = {
   auth: {
     async login(input: { email: string; password: string }) {
-      const res = await apiClient.post<LoginResponse>("/auth/login", input);
-      return res.data;
+      return requestJson<LoginResponse>("/auth/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
     },
     async register(input: {
       fullName: string;
@@ -59,54 +94,64 @@ export const api = {
       password: string;
       role: UserRole;
     }) {
-      const res = await apiClient.post<RegisterResponse>(
-        "/auth/register",
-        input,
-      );
-      return res.data;
+      return requestJson<RegisterResponse>("/auth/register", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
     },
     async profile() {
-      const res = await apiClient.get<ApiMessage<User>>("/auth/profile");
-      return res.data;
+      return requestJson<ApiMessage<User>>("/auth/profile");
+    },
+    async logout() {
+      return requestJson<ApiMessage<null>>("/auth/logout", { method: "POST" });
     },
   },
 
   categories: {
     async list() {
-      const res = await apiClient.get<Category[]>("/categories");
-      return res.data;
+      return requestJson<Category[]>("/categories");
     },
     async create(input: { name: string; slug: string }) {
-      const res = await apiClient.post<Category>("/categories", input);
-      return res.data;
+      return requestJson<Category>("/categories", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
     },
     async update(
       id: string,
       input: Partial<{ name: string; slug: string; isActive: boolean }>,
     ) {
-      const res = await apiClient.patch<Category>(`/categories/${id}`, input);
-      return res.data;
+      return requestJson<Category>(`/categories/${id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
     },
     async remove(id: string) {
-      const res = await apiClient.delete<
-        ApiMessage<unknown> | { message: string }
-      >(`/categories/${id}`);
-      return res.data;
+      return requestJson<ApiMessage<unknown> | { message: string }>(
+        `/categories/${id}`,
+        { method: "DELETE" },
+      );
     },
   },
 
   courses: {
     async list() {
-      const res = await apiClient.get<Course[]>("/courses");
-      return res.data;
+      return requestJson<Course[]>("/courses");
+    },
+    async publicList(limit?: number) {
+      const qs =
+        typeof limit === "number" ? `?limit=${encodeURIComponent(limit)}` : "";
+      return requestJson<Course[]>(`/courses/public${qs}`);
     },
     async get(id: string) {
-      const res = await apiClient.get<Course>(`/courses/${id}`);
-      return res.data;
+      return requestJson<Course>(`/courses/${id}`);
     },
     async create(input: {
       title: string;
-      slug: string;
+      slug?: string;
       description: string;
       categoryId: string;
       price: number;
@@ -114,14 +159,17 @@ export const api = {
       thumbnailUrl?: string;
       status?: "draft" | "published";
     }) {
-      const res = await apiClient.post<Course>("/courses", input);
-      return res.data;
+      return requestJson<Course>("/courses", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
     },
     async update(
       id: string,
       input: Partial<{
         title: string;
-        slug: string;
+        slug?: string;
         description: string;
         categoryId: string;
         price: number;
@@ -130,12 +178,16 @@ export const api = {
         status?: "draft" | "published";
       }>,
     ) {
-      const res = await apiClient.patch<Course>(`/courses/${id}`, input);
-      return res.data;
+      return requestJson<Course>(`/courses/${id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
     },
     async remove(id: string) {
-      const res = await apiClient.delete<{ message: string }>(`/courses/${id}`);
-      return res.data;
+      return requestJson<{ message: string }>(`/courses/${id}`, {
+        method: "DELETE",
+      });
     },
   },
 
@@ -143,7 +195,7 @@ export const api = {
     async uploadImage(file: File) {
       const form = new FormData();
       form.append("file", file);
-      const res = await apiClient.post<{
+      return requestJson<{
         message: string;
         data: {
           url: string;
@@ -152,46 +204,37 @@ export const api = {
           resourceType: string;
           size: number;
         };
-      }>("/media/upload", form, {
-        headers: { "Content-Type": "multipart/form-data" },
+      }>("/media/upload", {
+        method: "POST",
+        body: form,
       });
-      return res.data;
     },
   },
 
   enrollments: {
     async enroll(courseId: string) {
-      const res = await apiClient.post<ApiMessage<{ course: Course }>>(
+      return requestJson<ApiMessage<{ course: Course }>>(
         `/enrollments/${courseId}`,
+        { method: "POST" },
       );
-      return res.data;
     },
     async myCourses() {
-      const res = await apiClient.get<Enrollment[]>("/enrollments/my-courses");
-      return res.data;
+      return requestJson<Enrollment[]>("/enrollments/my-courses");
     },
   },
 
   teacher: {
     async dashboard() {
-      const res =
-        await apiClient.get<TeacherDashboardResponse>("/teacher/dashboard");
-      return res.data;
+      return requestJson<TeacherDashboardResponse>("/teacher/dashboard");
     },
     async myCourses() {
-      const res = await apiClient.get<ApiMessage<Course[]>>(
-        "/teacher/my-courses",
-      );
-      return res.data;
+      return requestJson<ApiMessage<Course[]>>("/teacher/my-courses");
     },
     async courseDetails(courseId: string) {
-      const res = await apiClient.get<ApiMessage<Course>>(
-        `/teacher/courses/${courseId}`,
-      );
-      return res.data;
+      return requestJson<ApiMessage<Course>>(`/teacher/courses/${courseId}`);
     },
     async courseStudents(courseId: string) {
-      const res = await apiClient.get<
+      return requestJson<
         ApiMessage<
           {
             enrollmentId: string;
@@ -200,10 +243,9 @@ export const api = {
           }[]
         >
       >(`/teacher/courses/${courseId}/students`);
-      return res.data;
     },
     async courseStats(courseId: string) {
-      const res = await apiClient.get<
+      return requestJson<
         ApiMessage<{
           courseId: string;
           title: string;
@@ -211,33 +253,26 @@ export const api = {
           totalStudents: number;
         }>
       >(`/teacher/courses/${courseId}/stats`);
-      return res.data;
     },
   },
 
   student: {
     async dashboard() {
-      const res =
-        await apiClient.get<StudentDashboardResponse>("/student/dashboard");
-      return res.data;
+      return requestJson<StudentDashboardResponse>("/student/dashboard");
     },
     async myCourses() {
-      const res = await apiClient.get<ApiMessage<Enrollment[]>>(
-        "/student/my-courses",
-      );
-      return res.data;
+      return requestJson<ApiMessage<Enrollment[]>>("/student/my-courses");
     },
     async courseDetail(courseId: string) {
-      const res = await apiClient.get<
+      return requestJson<
         ApiMessage<{ enrollment: Enrollment; course: Course }>
       >(`/student/courses/${courseId}`);
-      return res.data;
     },
   },
 
   admin: {
     async dashboard() {
-      const res = await apiClient.get<
+      return requestJson<
         ApiMessage<{
           totalUsers: number;
           totalTeachers: number;
@@ -248,33 +283,23 @@ export const api = {
           recentCourses: Course[];
         }>
       >("/admin/dashboard");
-      return res.data;
     },
     async users() {
-      const res = await apiClient.get<ApiMessage<User[]>>("/admin/users");
-      return res.data;
+      return requestJson<ApiMessage<User[]>>("/admin/users");
     },
     async teachers() {
-      const res = await apiClient.get<ApiMessage<User[]>>("/admin/teachers");
-      return res.data;
+      return requestJson<ApiMessage<User[]>>("/admin/teachers");
     },
     async students() {
-      const res = await apiClient.get<ApiMessage<User[]>>("/admin/students");
-      return res.data;
+      return requestJson<ApiMessage<User[]>>("/admin/students");
     },
     async courses() {
-      const res = await apiClient.get<ApiMessage<Course[]>>("/admin/courses");
-      return res.data;
+      return requestJson<ApiMessage<Course[]>>("/admin/courses");
     },
     async toggleUserStatus(id: string) {
-      const res = await apiClient.patch<
+      return requestJson<
         ApiMessage<{ id: string; isActive: boolean }>
-      >(`/admin/users/${id}/toggle-status`);
-      return res.data;
+      >(`/admin/users/${id}/toggle-status`, { method: "PATCH" });
     },
   },
 } as const;
-
-export function isApiError(error: unknown): error is AxiosError<ApiError> {
-  return axios.isAxiosError(error);
-}

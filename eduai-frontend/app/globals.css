@@ -1,6 +1,23 @@
 @import "tailwindcss";
 
 :root {
+  --background: #f6f7ff;
+  --foreground: #0f172a;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-foreground: #0f172a;
+  --muted: rgba(15, 23, 42, 0.06);
+  --muted-foreground: rgba(15, 23, 42, 0.62);
+  --border: rgba(15, 23, 42, 0.12);
+  --ring: rgba(99, 102, 241, 0.35);
+  --radius: 12px;
+
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(15, 23, 42, 0.06);
+  --secondary-foreground: #0f172a;
+}
+
+html[data-theme="aurora"] {
   --background: #060814;
   --foreground: #eef2ff;
   --card: rgba(255, 255, 255, 0.06);
@@ -9,7 +26,11 @@
   --muted-foreground: rgba(226, 232, 240, 0.72);
   --border: rgba(255, 255, 255, 0.12);
   --ring: rgba(99, 102, 241, 0.35);
-  --radius: 12px;
+
+  --primary: #7c3aed;
+  --primary-foreground: #0b0b12;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #eef2ff;
 }
 
 @theme inline {
@@ -21,34 +42,52 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background:
-    radial-gradient(1200px 600px at 10% 10%, rgba(34, 211, 238, 0.18), transparent 60%),
-    radial-gradient(900px 500px at 85% 15%, rgba(168, 85, 247, 0.18), transparent 55%),
-    radial-gradient(900px 500px at 60% 90%, rgba(59, 130, 246, 0.14), transparent 60%),
-    linear-gradient(180deg, #050713, #060814 30%, #050713);
-  color: var(--foreground);
+    radial-gradient(1200px 700px at 15% 10%, rgba(99, 102, 241, 0.16), transparent 62%),
+    radial-gradient(900px 560px at 85% 15%, rgba(168, 85, 247, 0.12), transparent 60%),
+    radial-gradient(1000px 600px at 55% 95%, rgba(59, 130, 246, 0.1), transparent 65%),
+    linear-gradient(180deg, #f6f7ff, #f9fafb 40%, #f6f7ff);
+  color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, -apple-system, Segoe UI, Roboto,
     Arial, sans-serif;
 }
 
 html {
+  color-scheme: light;
+}
+
+html[data-theme="aurora"] {
   color-scheme: dark;
+}
+
+html[data-theme="aurora"] body {
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(34, 211, 238, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 85% 15%, rgba(168, 85, 247, 0.18), transparent 55%),
+    radial-gradient(900px 500px at 60% 90%, rgba(59, 130, 246, 0.14), transparent 60%),
+    linear-gradient(180deg, #050713, #060814 30%, #050713);
 }
 
 .eduai-glass {
   background: var(--card);
   border: 1px solid var(--border);
   box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(18px);
+    0 12px 34px rgba(15, 23, 42, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
 }
 
 .eduai-glow {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 60px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(99, 102, 241, 0.18),
+    0 18px 60px rgba(99, 102, 241, 0.18);
 }

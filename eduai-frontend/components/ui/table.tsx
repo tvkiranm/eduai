@@ -4,7 +4,13 @@ import { cn } from "@/lib/utils";
 export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
     <div className="w-full overflow-auto rounded-2xl eduai-glass">
-      <table className={cn("w-full caption-bottom text-sm text-zinc-50", className)} {...props} />
+      <table
+        className={cn(
+          "w-full caption-bottom text-sm text-[color:var(--color-foreground)]",
+          className,
+        )}
+        {...props}
+      />
     </div>
   );
 }
@@ -27,7 +33,7 @@ export function TableRow({ className, ...props }: React.HTMLAttributes<HTMLTable
   return (
     <tr
       className={cn(
-        "border-b border-white/10 transition-colors hover:bg-white/5 data-[state=selected]:bg-white/5",
+        "border-b border-[color:var(--color-border)] transition-colors hover:bg-[color:var(--color-muted)] data-[state=selected]:bg-[color:var(--color-muted)]",
         className,
       )}
       {...props}
@@ -39,7 +45,7 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
   return (
     <th
       className={cn(
-        "h-11 px-4 text-left align-middle font-medium text-white/70 [&:has([role=checkbox])]:pr-0",
+        "h-11 px-4 text-left align-middle font-medium text-[color:var(--color-muted-foreground)] [&:has([role=checkbox])]:pr-0",
         className,
       )}
       {...props}

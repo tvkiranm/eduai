@@ -10,16 +10,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-cyan-400/90 via-fuchsia-400/90 to-indigo-400/90 text-zinc-950 shadow-lg shadow-indigo-500/10 hover:from-cyan-400 hover:via-fuchsia-400 hover:to-indigo-400",
+          "bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-[color:var(--color-primary-foreground)] shadow-lg shadow-indigo-500/20 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500",
         secondary:
-          "eduai-glass text-zinc-50 hover:bg-white/10",
+          "bg-[color:var(--color-secondary)] text-[color:var(--color-secondary-foreground)] hover:bg-[color:var(--color-muted)]",
         outline:
-          "eduai-glass bg-transparent text-zinc-50 hover:bg-white/10",
+          "bg-transparent border border-[color:var(--color-border)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-muted)]",
         ghost:
-          "text-zinc-50 hover:bg-white/10",
+          "text-[color:var(--color-foreground)] hover:bg-[color:var(--color-muted)]",
         destructive:
           "bg-red-600/90 text-white hover:bg-red-600",
-        link: "text-zinc-50 underline-offset-4 hover:underline",
+        link: "text-[color:var(--color-foreground)] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

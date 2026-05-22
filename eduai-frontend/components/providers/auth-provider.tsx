@@ -10,14 +10,13 @@ import React, {
 } from "react";
 import type { User, UserRole } from "@/lib/types";
 import { api } from "@/lib/api";
-import { clearAuth, getToken, getUser, setToken, setUser } from "@/lib/storage";
+import { clearUser, getUser, setUser } from "@/lib/storage";
 
 type AuthState =
-  | { status: "loading"; token: string | null; user: User | null }
-  | { status: "ready"; token: string | null; user: User | null };
+  | { status: "loading"; user: User | null }
+  | { status: "ready"; user: User | null };
 
 type AuthContextValue = {
-  token: string | null;
   user: User | null;
   role: UserRole | null;
   isAuthenticated: boolean;
@@ -36,83 +35,63 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>(() => {
-    const token = typeof window === "undefined" ? null : getToken();
     const user = typeof window === "undefined" ? null : getUser<User>();
-    return { status: "ready", token, user };
+    return { status: "ready", user };
   });
 
-  useEffect(() => {
-    if (!state.token || state.user) return;
-    void (async () => {
-      try {
-        const res = await api.auth.profile();
-        setUser(res.data);
-        setState((prev) => ({ ...prev, user: res.data, status: "ready" }));
-      } catch {
-        clearAuth();
-        setState({ status: "ready", token: null, user: null });
-      }
-    })();
-  }, [state.token, state.user]);
-
   const refreshProfile = useCallback(async () => {
-    if (!state.token) return;
     try {
       const res = await api.auth.profile();
       setUser(res.data);
       setState((prev) => ({ ...prev, user: res.data, status: "ready" }));
     } catch {
-      clearAuth();
-      setState({ status: "ready", token: null, user: null });
+      clearUser();
+      setState({ status: "ready", user: null });
     }
-  }, [state.token]);
+  }, []);
 
-  const login = useCallback(
-    async (input: { email: string; password: string }) => {
-      const res = await api.auth.login(input);
-      setToken(res.data.accessToken);
-      setUser(res.data.user);
-      setState({
-        status: "ready",
-        token: res.data.accessToken,
-        user: res.data.user,
-      });
-    },
-    [],
-  );
+  useEffect(() => {
+    void (async () => {
+      await refreshProfile();
+    })();
+  }, [refreshProfile]);
 
-  const register = useCallback(
-    async (input: {
-      fullName: string;
-      email: string;
-      password: string;
-      role: UserRole;
-    }) => {
-      await api.auth.register(input);
-      // Auto-login after successful registration
-      // await login({ email: input.email, password: input.password });
-    },
-    [login],
-  );
+  const login = useCallback(async (input: { email: string; password: string }) => {
+    const res = await api.auth.login(input);
+    setUser(res.data.user);
+    setState({
+      status: "ready",
+      user: res.data.user,
+    });
+  }, []);
+
+  const register = useCallback(async (input: {
+    fullName: string;
+    email: string;
+    password: string;
+    role: UserRole;
+  }) => {
+    await api.auth.register(input);
+  }, []);
 
   const logout = useCallback(() => {
-    clearAuth();
-    setState({ status: "ready", token: null, user: null });
+    void api.auth.logout();
+    clearUser();
+    setState({ status: "ready", user: null });
   }, []);
 
   const value = useMemo<AuthContextValue>(() => {
     const user = state.user;
     return {
-      token: state.token,
       user,
       role: user?.role ?? null,
-      isAuthenticated: Boolean(state.token && user),
+      isAuthenticated: Boolean(user),
       refreshProfile,
       login,
       register,
       logout,
     };
-  }, [login, refreshProfile, register, state.token, state.user, logout]);
+  }, [login, refreshProfile, register, state.user, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

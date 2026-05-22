@@ -40,7 +40,7 @@ export default function AdminDashboardPage() {
         ].map((s) => (
           <Card key={s.label}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-white/65">{s.label}</CardTitle>
+              <CardTitle className="text-sm text-[color:var(--color-muted-foreground)]">{s.label}</CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-semibold">{s.value}</CardContent>
           </Card>

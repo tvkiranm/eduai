@@ -38,19 +38,19 @@ export default function TeacherCourseStatsPage() {
           <CardHeader>
             <CardTitle className="text-base">{data.title}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-white/65">
+          <CardContent className="space-y-2 text-sm text-[color:var(--color-muted-foreground)]">
             <div>
-              <span className="font-medium text-zinc-50">Course ID:</span> {data.courseId}
+              <span className="font-medium text-[color:var(--color-foreground)]">Course ID:</span> {data.courseId}
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Status:</span>{" "}
+              <span className="font-medium text-[color:var(--color-foreground)]">Status:</span>{" "}
               <span className="capitalize">{data.status}</span>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-white/65">Total students</CardTitle>
+            <CardTitle className="text-sm text-[color:var(--color-muted-foreground)]">Total students</CardTitle>
           </CardHeader>
           <CardContent className="text-2xl font-semibold">{data.totalStudents}</CardContent>
         </Card>

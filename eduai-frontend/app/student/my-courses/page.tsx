@@ -51,7 +51,7 @@ export default function StudentMyCoursesPage() {
                     <TableCell>{e.createdAt ? new Date(e.createdAt).toLocaleString() : "-"}</TableCell>
                     <TableCell className="text-right">
                       <Link
-                        className="text-sm font-medium text-zinc-50 hover:underline"
+                        className="text-sm font-medium text-[color:var(--color-foreground)] hover:underline"
                         href={`/student/courses/${e.courseId}`}
                       >
                         Open
@@ -65,7 +65,14 @@ export default function StudentMyCoursesPage() {
             <EmptyState
               title="No enrolled courses"
               description="Browse courses and enroll in a free one."
-              action={<Link href="/student/browse" className="text-sm font-medium underline text-zinc-50">Browse courses</Link>}
+              action={
+                <Link
+                  href="/student/browse"
+                  className="text-sm font-medium underline text-[color:var(--color-foreground)]"
+                >
+                  Browse courses
+                </Link>
+              }
             />
           )}
         </CardContent>

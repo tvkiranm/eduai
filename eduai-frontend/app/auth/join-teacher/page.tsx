@@ -81,9 +81,9 @@ export default function JoinTeacherPage() {
             {form.formState.isSubmitting ? "Creating..." : "Create teacher account"}
           </Button>
 
-          <p className="text-center text-sm text-white/70">
+          <p className="text-center text-sm text-[color:var(--color-muted-foreground)]">
             Want a student account?{" "}
-            <Link href="/auth/sign-up" className="font-medium text-zinc-50 hover:underline">
+            <Link href="/auth/sign-up" className="font-medium text-[color:var(--color-foreground)] hover:underline">
               Sign up
             </Link>
           </p>

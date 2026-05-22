@@ -47,7 +47,7 @@ export default function AdminMediaPage() {
             {upload.data ? (
               <div className="eduai-glass rounded-xl p-4 text-sm">
                 <div className="font-semibold">Result</div>
-                <div className="mt-2 break-all text-white/70">
+                <div className="mt-2 break-all text-[color:var(--color-muted-foreground)]">
                   URL: {upload.data.data.url}
                 </div>
               </div>

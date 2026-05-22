@@ -47,13 +47,13 @@ export default function PublicCourseDetailPage() {
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle>{course.data.title}</CardTitle>
-                <div className="text-sm text-white/65">
+                <div className="text-sm text-[color:var(--color-muted-foreground)]">
                   Level: {course.data.level} • Price: {course.data.price} • Status:{" "}
                   <span className="capitalize">{course.data.status}</span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-white/70">{course.data.description}</p>
+                <p className="text-[color:var(--color-muted-foreground)]">{course.data.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {isAuthenticated ? (
                     <Button
@@ -93,10 +93,10 @@ export default function PublicCourseDetailPage() {
                   <img
                     src={course.data.thumbnailUrl}
                     alt={course.data.title}
-                    className="aspect-video w-full rounded-lg border border-white/10 object-cover"
+                    className="aspect-video w-full rounded-lg border border-[color:var(--color-border)] object-cover"
                   />
                 ) : (
-                  <div className="eduai-glass rounded-lg border-dashed p-6 text-sm text-white/65">
+                  <div className="eduai-glass rounded-lg border-dashed p-6 text-sm text-[color:var(--color-muted-foreground)]">
                     No thumbnail
                   </div>
                 )}

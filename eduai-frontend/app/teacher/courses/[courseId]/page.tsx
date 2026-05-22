@@ -56,22 +56,22 @@ export default function TeacherCourseDetailsPage() {
           <CardHeader>
             <CardTitle className="text-base">Overview</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-white/65">
+          <CardContent className="space-y-2 text-sm text-[color:var(--color-muted-foreground)]">
             <div>
-              <span className="font-medium text-zinc-50">Slug:</span> {data.slug}
+              <span className="font-medium text-[color:var(--color-foreground)]">Slug:</span> {data.slug}
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Status:</span>{" "}
+              <span className="font-medium text-[color:var(--color-foreground)]">Status:</span>{" "}
               <span className="capitalize">{data.status}</span>
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Price:</span> {data.price}
+              <span className="font-medium text-[color:var(--color-foreground)]">Price:</span> {data.price}
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Level:</span> {data.level}
+              <span className="font-medium text-[color:var(--color-foreground)]">Level:</span> {data.level}
             </div>
             <div>
-              <span className="font-medium text-zinc-50">Category:</span>{" "}
+              <span className="font-medium text-[color:var(--color-foreground)]">Category:</span>{" "}
               {data.category?.name ?? "-"}
             </div>
           </CardContent>
@@ -87,10 +87,10 @@ export default function TeacherCourseDetailsPage() {
               <img
                 src={data.thumbnailUrl}
                 alt={data.title}
-                className="aspect-video w-full rounded-lg border border-white/10 object-cover"
+                className="aspect-video w-full rounded-lg border border-[color:var(--color-border)] object-cover"
               />
             ) : (
-              <div className="eduai-glass rounded-lg border-dashed p-6 text-sm text-white/65">
+              <div className="eduai-glass rounded-lg border-dashed p-6 text-sm text-[color:var(--color-muted-foreground)]">
                 No thumbnail
               </div>
             )}

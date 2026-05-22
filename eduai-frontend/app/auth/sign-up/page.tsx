@@ -151,7 +151,7 @@ export default function SignUpPage() {
                 {form.formState.errors.role.message}
               </p>
             ) : null}
-            <p className="text-xs text-white/65">
+            <p className="text-xs text-[color:var(--color-muted-foreground)]">
               Admin accounts are typically created by the organization.
             </p>
           </div>
@@ -164,11 +164,11 @@ export default function SignUpPage() {
             {form.formState.isSubmitting ? "Creating..." : "Create account"}
           </Button>
 
-          <p className="text-center text-sm text-white/70">
+          <p className="text-center text-sm text-[color:var(--color-muted-foreground)]">
             Already have an account?{" "}
             <Link
               href="/auth/sign-in"
-              className="font-medium text-zinc-50 hover:underline"
+              className="font-medium text-[color:var(--color-foreground)] hover:underline"
             >
               Sign in
             </Link>
