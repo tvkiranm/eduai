@@ -88,6 +88,20 @@ export const api = {
         body: JSON.stringify(input),
       });
     },
+    async forgotPassword(input: { email: string }) {
+      return requestJson<{ message: string }>("/auth/forgot-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
+    },
+    async resetPassword(input: { token: string; password: string }) {
+      return requestJson<{ message: string }>("/auth/reset-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
+    },
     async register(input: {
       fullName: string;
       email: string;
