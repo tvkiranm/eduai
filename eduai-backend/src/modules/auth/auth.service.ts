@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { UsersService } from '../users/users.service';
+import { ForgotPasswordDto } from './dto/forgot.dto';
 
 @Injectable()
 export class AuthService {
@@ -73,5 +74,13 @@ export class AuthService {
         user: safeUser,
       },
     };
+  }
+
+  public async forgotPassword(dto: ForgotPasswordDto) {
+    const user = await this.usersService.findByEmail(dto.email);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid email');
+    }
   }
 }

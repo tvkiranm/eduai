@@ -22,6 +22,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
+import { ForgotPasswordDto } from './dto/forgot.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -48,6 +49,17 @@ export class AuthController {
   })
   public login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login user and get access token' })
+  @ApiOkResponse({ description: 'Login successful' })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid email/password or inactive account',
+  })
+  public forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
   }
 
   @Get('profile')

@@ -100,7 +100,10 @@ export class CategoriesService {
       }
     }
 
-    Object.assign(category, { ...dto, ...(normalizedSlug ? { slug: normalizedSlug } : {}) });
+    Object.assign(category, {
+      ...dto,
+      ...(normalizedSlug ? { slug: normalizedSlug } : {}),
+    });
     return this.categoryRepository.save(category);
   }
 

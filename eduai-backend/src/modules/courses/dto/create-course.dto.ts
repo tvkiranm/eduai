@@ -7,7 +7,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { CourseStatus } from '../entities/course.entity';
+import { CourseLevel, CourseStatus } from '../entities/course.entity';
 
 export class CreateCourseDto {
   @ApiProperty({ example: 'React JS Master Course' })
@@ -15,10 +15,11 @@ export class CreateCourseDto {
   @IsNotEmpty()
   title!: string;
 
-  @ApiProperty({ example: 'react-js-master-course' })
+  @ApiProperty({ example: 'react-js-master-course', required: false })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  slug!: string;
+  slug?: string;
 
   @ApiProperty({ example: 'Complete React course from basic to advanced' })
   @IsString()
@@ -33,9 +34,13 @@ export class CreateCourseDto {
   @IsNumber()
   price!: number;
 
-  @ApiProperty({ example: 'beginner' })
-  @IsString()
-  level!: string;
+  // @ApiProperty({ example: 'beginner' })
+  // @IsString()
+  // level!: string;
+
+  @IsOptional()
+  @IsEnum(CourseLevel)
+  level?: CourseLevel;
 
   @ApiProperty({ required: false })
   @IsOptional()

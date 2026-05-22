@@ -15,6 +15,13 @@ export enum CourseStatus {
   PUBLISHED = 'published',
 }
 
+// export type CourseLevel = 'beginner' | 'intermediate' | 'advanced';
+
+export enum CourseLevel {
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
+}
 @Entity('courses')
 export class Course {
   @PrimaryGeneratedColumn('uuid')
@@ -34,9 +41,6 @@ export class Course {
 
   @Column({ default: 0 })
   price!: number;
-
-  @Column({ default: 'beginner' })
-  level!: string;
 
   @Column({
     type: 'enum',
@@ -61,6 +65,13 @@ export class Course {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column({
+    type: 'enum',
+    enum: CourseLevel,
+    default: CourseLevel.BEGINNER,
+  })
+  level!: CourseLevel;
 
   @UpdateDateColumn()
   updatedAt!: Date;
