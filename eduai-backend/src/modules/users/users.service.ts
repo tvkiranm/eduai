@@ -60,4 +60,8 @@ export class UsersService {
     const user = this.userRepository.create(input);
     return this.userRepository.save(user);
   }
+
+  public async updatePassword(userId: string, password: string): Promise<void> {
+    await this.userRepository.update({ id: userId }, { password });
+  }
 }

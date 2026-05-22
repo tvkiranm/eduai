@@ -7,13 +7,18 @@ import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
+import { EmailModule } from '../../shared/email/email.module';
 
 type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
 
 @Module({
   imports: [
     UsersModule,
+    EmailModule,
     PassportModule,
+    TypeOrmModule.forFeature([PasswordResetToken]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

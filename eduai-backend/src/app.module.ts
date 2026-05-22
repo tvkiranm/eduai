@@ -10,9 +10,21 @@ import { MediaModule } from './modules/media/media.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { StudentModule } from './modules/student/student.module';
+import { APP_GUARD } from '@nestjs/core';
+import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: seconds(60), limit: 5 }],
+      errorMessage: 'Too many attempts. Please try again later.',
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
