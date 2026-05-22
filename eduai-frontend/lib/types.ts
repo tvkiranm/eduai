@@ -16,6 +16,7 @@ export type ApiMessage<T> = {
 };
 
 export type LoginResponse = ApiMessage<{
+  accessToken: string;
   user: User;
 }>;
 

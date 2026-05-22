@@ -10,6 +10,7 @@ import type {
   User,
   UserRole,
 } from "@/lib/types";
+import { getToken } from "@/lib/storage";
 
 export type ApiError = {
   statusCode?: number;
@@ -41,25 +42,31 @@ export function getErrorMessage(error: unknown): string {
   return "Something went wrong. Try again.";
 }
 
-const BFF_BASE = "/api/bff";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ??
+  process.env.API_URL ??
+  "http://localhost:4005";
 
 function buildUrl(path: string) {
-  // In the browser, relative is correct. On the server, allow an absolute base if provided.
-  const base =
-    typeof window === "undefined"
-      ? (process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL ?? "").replace(/\/$/, "")
-      : "";
-  return `${base}${BFF_BASE}${path}`;
+  const base = API_BASE.replace(/\/+$/, "");
+  return `${base}${path}`;
 }
 
 async function requestJson<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
+  const token = typeof window === "undefined" ? null : getToken();
+  const headers = new Headers(init?.headers);
+  if (token && !headers.has("authorization")) {
+    headers.set("authorization", `Bearer ${token}`);
+  }
+
   const res = await fetch(buildUrl(path), {
     credentials: "include",
     cache: "no-store",
     ...init,
+    headers,
   });
 
   const contentType = res.headers.get("content-type") ?? "";

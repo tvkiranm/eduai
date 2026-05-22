@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import type { User, UserRole } from "@/lib/types";
 import { api } from "@/lib/api";
-import { clearUser, getUser, setUser } from "@/lib/storage";
+import { clearAuth, clearUser, getUser, setToken, setUser } from "@/lib/storage";
 
 type AuthState =
   | { status: "loading"; user: User | null }
@@ -58,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (input: { email: string; password: string }) => {
     const res = await api.auth.login(input);
+    setToken(res.data.accessToken);
     setUser(res.data.user);
     setState({
       status: "ready",
@@ -76,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     void api.auth.logout();
-    clearUser();
+    clearAuth();
     setState({ status: "ready", user: null });
   }, []);
 
