@@ -22,7 +22,13 @@ import { cn } from "@/lib/utils";
 import { getNavItems } from "@/lib/nav";
 import type { UserRole } from "@/lib/types";
 
-export function AppShell({ children, role }: { children: React.ReactNode; role: UserRole }) {
+export function AppShell({
+  children,
+  role,
+}: {
+  children: React.ReactNode;
+  role: UserRole;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -30,14 +36,19 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
 
   return (
     <div className="min-h-screen w-full bg-[color:var(--color-background)]">
-      <div className="mx-auto flex min-h-screen w-full max-w-7xl gap-4 px-3 py-3 md:px-6 md:py-6 2xl:px-10">
+      <div className="mx-auto flex min-h-screen w-full gap-4 px-3 py-3 md:px-6 md:py-6 2xl:px-10">
         <aside className="hidden w-72 shrink-0 md:block">
           <div className="sticky top-6 flex h-[calc(100vh-48px)] flex-col rounded-3xl eduai-glass p-4">
-            <Link href="/" className="flex items-center gap-2 px-2 py-2 font-semibold">
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-2 py-2 font-semibold"
+            >
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-indigo-500/20">
                 <GraduationCap className="h-5 w-5" />
               </span>
-              <span className="text-[color:var(--color-foreground)]">EduAI</span>
+              <span className="text-[color:var(--color-foreground)]">
+                EduAI
+              </span>
             </Link>
 
             <Separator className="my-4" />
@@ -52,11 +63,15 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
                     href={item.href}
                     className={cn(
                       "flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[color:var(--color-muted-foreground)] hover:bg-[color:var(--color-muted)]",
-                      active &&
-                        "bg-indigo-600/10 text-indigo-700",
+                      active && "bg-indigo-600/10 text-indigo-700",
                     )}
                   >
-                    <Icon className={cn("h-4 w-4", active ? "text-indigo-700" : undefined)} />
+                    <Icon
+                      className={cn(
+                        "h-4 w-4",
+                        active ? "text-indigo-700" : undefined,
+                      )}
+                    />
                     {item.title}
                   </Link>
                 );
@@ -101,7 +116,12 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
               </div>
 
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" aria-label="Notifications" title="Notifications">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Notifications"
+                  title="Notifications"
+                >
                   <Bell className="h-4 w-4" />
                 </Button>
                 <ThemeToggle />
