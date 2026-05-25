@@ -21,9 +21,20 @@ import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     },
   ],
   imports: [
-    ThrottlerModule.forRoot({
-      throttlers: [{ ttl: seconds(60), limit: 5 }],
-      errorMessage: 'Too many attempts. Please try again later.',
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const ttlSeconds = Number(
+          config.get<string>('THROTTLE_TTL_SECONDS') ?? '60',
+        );
+        const limit = Number(config.get<string>('THROTTLE_LIMIT') ?? '200');
+
+        return {
+          throttlers: [{ ttl: seconds(ttlSeconds), limit }],
+          errorMessage: 'Too many attempts. Please try again later.',
+        };
+      },
     }),
     ConfigModule.forRoot({
       isGlobal: true,

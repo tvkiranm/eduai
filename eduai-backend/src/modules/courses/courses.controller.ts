@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -34,6 +35,19 @@ export class CoursesController {
   @Get()
   findAll() {
     return this.coursesService.findAll();
+  }
+
+  @Get('public')
+  findPublic(@Query('limit') limit?: string) {
+    const parsed =
+      typeof limit === 'string' && limit.trim()
+        ? Number.parseInt(limit, 10)
+        : undefined;
+    return this.coursesService.findPublic(
+      typeof parsed === 'number' && Number.isFinite(parsed)
+        ? parsed
+        : undefined,
+    );
   }
 
   @Get(':id')
