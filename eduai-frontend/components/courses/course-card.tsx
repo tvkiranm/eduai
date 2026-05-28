@@ -34,15 +34,17 @@ export function CourseCard({
   onEnroll,
   enrolling,
   showEnroll = false,
+  enrolled = false,
 }: {
   course: Course;
   detailsHref?: string;
   onEnroll?: (courseId: string) => void;
   enrolling?: boolean;
   showEnroll?: boolean;
+  enrolled?: boolean;
 }) {
   const priceLabel = formatPrice(course.price);
-  const canEnroll = showEnroll && typeof onEnroll === "function";
+  const canEnroll = !enrolled && showEnroll && typeof onEnroll === "function";
 
   return (
     <Card className="flex h-full flex-col overflow-hidden">
@@ -71,6 +73,7 @@ export function CourseCard({
             {course.price ? <IndianRupee className="mr-1 h-3.5 w-3.5" /> : null}
             {priceLabel}
           </Badge>
+          {enrolled ? <Badge>Enrolled</Badge> : null}
         </div>
         <CardTitle className="mt-2 line-clamp-1 text-base">
           {course.title}

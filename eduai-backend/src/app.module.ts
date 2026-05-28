@@ -12,6 +12,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { StudentModule } from './modules/student/student.module';
 import { APP_GUARD } from '@nestjs/core';
 import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ResumeModule } from './modules/resume/resume.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   providers: [
@@ -60,6 +62,8 @@ import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     TeacherModule,
     AdminModule,
     StudentModule,
+    ResumeModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

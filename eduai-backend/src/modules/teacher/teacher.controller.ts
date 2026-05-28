@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -50,5 +50,11 @@ export class TeacherController {
   @ApiOperation({ summary: 'Get teacher course stats' })
   courseStats(@Param('courseId') courseId: string, @CurrentUser() user: User) {
     return this.teacherService.courseStats(courseId, user);
+  }
+
+  @Post('courses/:courseId/curriculum/seed-two-sum')
+  @ApiOperation({ summary: 'Seed a Two Sum interactive lesson into a course' })
+  seedTwoSum(@Param('courseId') courseId: string, @CurrentUser() user: User) {
+    return this.teacherService.seedTwoSumInteractiveLesson(courseId, user);
   }
 }

@@ -7,6 +7,8 @@ import {
   Layers,
   Upload,
   PlusCircle,
+  Map,
+  MessagesSquare,
 } from "lucide-react";
 
 export type NavItem = {
@@ -33,12 +35,15 @@ export function getNavItems(role: UserRole): NavItem[] {
       { title: "Dashboard", href: "/teacher/dashboard", icon: LayoutDashboard },
       { title: "My Courses", href: "/teacher/my-courses", icon: BookOpen },
       { title: "Create Course", href: "/teacher/courses/new", icon: PlusCircle },
+      { title: "Chat", href: "/teacher/chat", icon: MessagesSquare },
     ];
   }
 
   return [
     { title: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
+    { title: "Resume Roadmap", href: "/student/roadmap", icon: Map },
     { title: "Browse Courses", href: "/student/browse", icon: BookOpen },
     { title: "My Courses", href: "/student/my-courses", icon: GraduationCap },
+    { title: "Chat", href: "/student/chat", icon: MessagesSquare },
   ];
 }

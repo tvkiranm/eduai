@@ -19,4 +19,3 @@ export class TestEmailDto {
   @IsString()
   html?: string;
 }
-

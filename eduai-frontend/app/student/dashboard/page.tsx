@@ -7,7 +7,13 @@ import { toast } from "sonner";
 
 import { EmptyState, LoadingState } from "@/components/layout/states";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/components/providers/auth-provider";
 import { api, getErrorMessage } from "@/lib/api";
 
@@ -22,15 +28,24 @@ export default function StudentDashboardPage() {
     if (dashboard.isError) toast.error(getErrorMessage(dashboard.error));
   }, [dashboard.error, dashboard.isError]);
 
-  if (dashboard.isLoading) return <LoadingState label="Loading student dashboard..." />;
-  if (dashboard.isError) return <EmptyState title="Failed to load dashboard" description="Please try again." />;
+  if (dashboard.isLoading)
+    return <LoadingState label="Loading student dashboard..." />;
+  if (dashboard.isError)
+    return (
+      <EmptyState
+        title="Failed to load dashboard"
+        description="Please try again."
+      />
+    );
 
   const data = dashboard.data?.data;
   if (!data) return <EmptyState title="No dashboard data" />;
 
-  const displayName = user?.fullName?.split(" ")[0] || user?.fullName || "Learner";
+  const displayName =
+    user?.fullName?.split(" ")[0] || user?.fullName || "Learner";
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const streakDays = Math.max(1, (data.totalEnrolledCourses || 0) * 3);
 
   return (
@@ -94,7 +109,11 @@ export default function StudentDashboardPage() {
                     </div>
                   </div>
                   <Button asChild className="md:shrink-0">
-                    <Link href={`/student/courses/${data.recentCourses[0].courseId}`}>Continue</Link>
+                    <Link
+                      href={`/student/courses/${data.recentCourses[0].courseId}`}
+                    >
+                      Continue
+                    </Link>
                   </Button>
                 </div>
               ) : (
@@ -131,7 +150,8 @@ export default function StudentDashboardPage() {
                         {en.course?.title ?? "Course"}
                       </div>
                       <div className="mt-1 text-sm text-[color:var(--color-muted-foreground)]">
-                        {en.course?.category?.name ?? "—"} • {en.course?.level ?? "—"}
+                        {en.course?.category?.name ?? "—"} •{" "}
+                        {en.course?.level ?? "—"}
                       </div>
                       <div className="mt-4 h-2 w-full rounded-full bg-black/5">
                         <div className="h-2 w-[60%] rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600" />
@@ -140,7 +160,10 @@ export default function StudentDashboardPage() {
                   ))}
                 </div>
               ) : (
-                <EmptyState title="No courses yet" description="Enroll in a course to see it here." />
+                <EmptyState
+                  title="No courses yet"
+                  description="Enroll in a course to see it here."
+                />
               )}
             </CardContent>
           </Card>
@@ -169,7 +192,9 @@ export default function StudentDashboardPage() {
                     </span>{" "}
                     courses enrolled
                   </div>
-                  <div className="mt-1">Keep a daily streak to improve faster.</div>
+                  <div className="mt-1">
+                    Keep a daily streak to improve faster.
+                  </div>
                 </div>
               </div>
 
@@ -188,25 +213,22 @@ export default function StudentDashboardPage() {
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div>
-                <div className="text-xs font-semibold text-[color:var(--color-muted-foreground)]">Level</div>
+                <div className="text-xs font-semibold text-[color:var(--color-muted-foreground)]">
+                  Level
+                </div>
                 <div className="mt-2 space-y-2">
                   {["Beginner", "Intermediate", "Advanced"].map((l) => (
-                    <label key={l} className="flex items-center gap-2 text-[color:var(--color-muted-foreground)]">
-                      <input type="checkbox" className="h-4 w-4 accent-indigo-600" />
+                    <label
+                      key={l}
+                      className="flex items-center gap-2 text-[color:var(--color-muted-foreground)]"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-indigo-600"
+                      />
                       {l}
                     </label>
                   ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-[color:var(--color-muted-foreground)]">Category</div>
-                <div className="mt-2">
-                  <select className="eduai-glass h-10 w-full rounded-xl px-3 text-[color:var(--color-foreground)]">
-                    <option>All Categories</option>
-                    <option>Development</option>
-                    <option>Design</option>
-                    <option>Business</option>
-                  </select>
                 </div>
               </div>
               <Button className="w-full">Apply filters</Button>

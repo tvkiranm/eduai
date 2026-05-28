@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, GraduationCap, LogOut, Search } from "lucide-react";
+import { Bell, GraduationCap, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 import { useAuth } from "@/components/providers/auth-provider";
@@ -16,8 +16,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { getNavItems } from "@/lib/nav";
 import type { UserRole } from "@/lib/types";
@@ -104,26 +111,38 @@ export function AppShell({
                 </div>
               </div>
 
-              <div className="hidden w-full max-w-md items-center md:flex">
-                <div className="relative w-full">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-muted-foreground)]" />
-                  <Input
-                    aria-label="Search"
-                    placeholder="Search courses, topics..."
-                    className="pl-9"
-                  />
-                </div>
-              </div>
-
               <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Notifications"
-                  title="Notifications"
-                >
-                  <Bell className="h-4 w-4" />
-                </Button>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Notifications"
+                      title="Notifications"
+                    >
+                      <Bell className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="p-0">
+                    <div className="p-4">
+                      <SheetHeader>
+                        <SheetTitle>Notifications</SheetTitle>
+                        <SheetDescription>Updates, reminders, and system messages.</SheetDescription>
+                      </SheetHeader>
+                    </div>
+
+                    <div className="border-t border-[color:var(--color-border)] p-4">
+                      <div className="eduai-glass rounded-2xl border-dashed p-8 text-center">
+                        <div className="text-sm font-semibold text-[color:var(--color-foreground)]">
+                          No notifications
+                        </div>
+                        <p className="mt-1 text-sm text-[color:var(--color-muted-foreground)]">
+                          You&apos;re all caught up.
+                        </p>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
                 <ThemeToggle />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

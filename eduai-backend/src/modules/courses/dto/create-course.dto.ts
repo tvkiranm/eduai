@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsNotEmpty,
@@ -38,6 +38,7 @@ export class CreateCourseDto {
   // @IsString()
   // level!: string;
 
+  @ApiPropertyOptional({ enum: CourseLevel, example: CourseLevel.BEGINNER })
   @IsOptional()
   @IsEnum(CourseLevel)
   level?: CourseLevel;

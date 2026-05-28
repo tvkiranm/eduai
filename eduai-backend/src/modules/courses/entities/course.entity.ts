@@ -6,9 +6,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CourseModuleEntity } from './course-module.entity';
+import { Lesson } from './lesson.entity';
 
 export enum CourseStatus {
   DRAFT = 'draft',
@@ -75,4 +78,10 @@ export class Course {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @OneToMany(() => CourseModuleEntity, (m) => m.course)
+  modules!: CourseModuleEntity[];
+
+  @OneToMany(() => Lesson, (l) => l.course)
+  lessons!: Lesson[];
 }

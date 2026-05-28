@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Course } from '../courses/entities/course.entity';
+import { CourseModuleEntity } from '../courses/entities/course-module.entity';
+import { Lesson } from '../courses/entities/lesson.entity';
 import { Enrollment } from '../enrollments/entities/enrollment.entity';
 import { User } from '../users/entities/user.entity';
 
@@ -16,6 +18,12 @@ export class StudentService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+
+    @InjectRepository(CourseModuleEntity)
+    private readonly courseModuleRepository: Repository<CourseModuleEntity>,
+
+    @InjectRepository(Lesson)
+    private readonly lessonRepository: Repository<Lesson>,
 
     @InjectRepository(Enrollment)
     private readonly enrollmentRepository: Repository<Enrollment>,
@@ -135,6 +143,82 @@ export class StudentService {
       data: {
         enrollment,
         course,
+      },
+    };
+  }
+
+  async courseCurriculum(courseId: string, user: User) {
+    const enrollment = await this.enrollmentRepository.findOne({
+      where: { studentId: user.id, courseId },
+      select: { id: true },
+    });
+    if (!enrollment) {
+      throw new ForbiddenException('You are not enrolled in this course');
+    }
+
+    const modules = await this.courseModuleRepository.find({
+      where: { courseId },
+      relations: { lessons: true },
+      order: {
+        position: 'ASC',
+        lessons: { position: 'ASC' },
+      },
+    });
+
+    return {
+      message: 'Course curriculum fetched successfully',
+      data: modules.map((m) => ({
+        id: m.id,
+        title: m.title,
+        description: m.description ?? null,
+        position: m.position,
+        lessons: (m.lessons ?? []).map((l) => ({
+          id: l.id,
+          title: l.title,
+          description: l.description ?? null,
+          lessonType: l.lessonType,
+          position: l.position,
+          xpReward: l.xpReward,
+        })),
+      })),
+    };
+  }
+
+  async lessonDetail(lessonId: string, user: User) {
+    const lesson = await this.lessonRepository.findOne({
+      where: { id: lessonId },
+      relations: { module: true },
+    });
+
+    if (!lesson) {
+      throw new NotFoundException('Lesson not found');
+    }
+
+    const enrollment = await this.enrollmentRepository.findOne({
+      where: { studentId: user.id, courseId: lesson.courseId },
+      select: { id: true },
+    });
+
+    if (!enrollment) {
+      throw new ForbiddenException('You are not enrolled in this course');
+    }
+
+    return {
+      message: 'Lesson fetched successfully',
+      data: {
+        id: lesson.id,
+        courseId: lesson.courseId,
+        moduleId: lesson.moduleId,
+        moduleTitle: lesson.module?.title ?? null,
+        title: lesson.title,
+        description: lesson.description ?? null,
+        lessonType: lesson.lessonType,
+        position: lesson.position,
+        xpReward: lesson.xpReward,
+        videoUrl: lesson.videoUrl ?? null,
+        articleContent: lesson.articleContent ?? null,
+        interactiveConfig: lesson.interactiveConfig ?? null,
+        quizConfig: lesson.quizConfig ?? null,
       },
     };
   }

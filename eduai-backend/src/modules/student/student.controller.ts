@@ -33,4 +33,19 @@ export class StudentController {
   courseDetail(@Param('courseId') courseId: string, @CurrentUser() user: User) {
     return this.studentService.courseDetail(courseId, user);
   }
+
+  @Get('courses/:courseId/curriculum')
+  @ApiOperation({ summary: 'Get enrolled course curriculum (modules + lessons)' })
+  courseCurriculum(
+    @Param('courseId') courseId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.studentService.courseCurriculum(courseId, user);
+  }
+
+  @Get('lessons/:lessonId')
+  @ApiOperation({ summary: 'Get lesson detail (supports interactive lessons)' })
+  lessonDetail(@Param('lessonId') lessonId: string, @CurrentUser() user: User) {
+    return this.studentService.lessonDetail(lessonId, user);
+  }
 }

@@ -9,6 +9,7 @@ import { Not, QueryFailedError, Repository } from 'typeorm';
 
 import { User, UserRole } from '../users/entities/user.entity';
 import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course, CourseStatus } from './entities/course.entity';
 import { makeUniqueSlug, toSlug } from '../../common/slug';
 
@@ -124,7 +125,7 @@ export class CoursesService {
 
   async update(
     id: string,
-    dto: Partial<CreateCourseDto>,
+    dto: UpdateCourseDto,
     user: User,
   ): Promise<Course> {
     const course = await this.findOne(id);

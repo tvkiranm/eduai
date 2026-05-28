@@ -9,6 +9,11 @@ import type {
   TeacherDashboardResponse,
   User,
   UserRole,
+  ResumeAnalyzeResponse,
+  CourseCurriculumResponse,
+  LessonDetailResponse,
+  Conversation,
+  ChatMessage,
 } from "@/lib/types";
 import { getToken } from "@/lib/storage";
 
@@ -232,6 +237,20 @@ export const api = {
     },
   },
 
+  resume: {
+    async analyze(input: { file: File; jobDescription?: string }) {
+      const form = new FormData();
+      form.append("file", input.file);
+      if (input.jobDescription?.trim()) {
+        form.append("jobDescription", input.jobDescription.trim());
+      }
+      return requestJson<ResumeAnalyzeResponse>("/resume/upload", {
+        method: "POST",
+        body: form,
+      });
+    },
+  },
+
   enrollments: {
     async enroll(courseId: string) {
       return requestJson<ApiMessage<{ course: Course }>>(
@@ -241,6 +260,29 @@ export const api = {
     },
     async myCourses() {
       return requestJson<Enrollment[]>("/enrollments/my-courses");
+    },
+  },
+
+  chat: {
+    async conversations(userId: string) {
+      const qs = `?userId=${encodeURIComponent(userId)}`;
+      return requestJson<Conversation[]>(`/chat/conversations${qs}`);
+    },
+    async messages(conversationId: string) {
+      return requestJson<ChatMessage[]>(
+        `/chat/conversations/${encodeURIComponent(conversationId)}/messages`,
+      );
+    },
+    async sendMessage(input: {
+      senderId: string;
+      receiverId: string;
+      content: string;
+    }) {
+      return requestJson<ChatMessage>("/chat/messages", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
     },
   },
 
@@ -275,6 +317,12 @@ export const api = {
         }>
       >(`/teacher/courses/${courseId}/stats`);
     },
+    async seedTwoSumInteractive(courseId: string) {
+      return requestJson<ApiMessage<{ moduleId: string; lessonId: string }>>(
+        `/teacher/courses/${courseId}/curriculum/seed-two-sum`,
+        { method: "POST" },
+      );
+    },
   },
 
   student: {
@@ -288,6 +336,14 @@ export const api = {
       return requestJson<
         ApiMessage<{ enrollment: Enrollment; course: Course }>
       >(`/student/courses/${courseId}`);
+    },
+    async courseCurriculum(courseId: string) {
+      return requestJson<CourseCurriculumResponse>(
+        `/student/courses/${courseId}/curriculum`,
+      );
+    },
+    async lessonDetail(lessonId: string) {
+      return requestJson<LessonDetailResponse>(`/student/lessons/${lessonId}`);
     },
   },
 

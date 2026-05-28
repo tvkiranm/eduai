@@ -69,3 +69,88 @@ export type StudentDashboardResponse = ApiMessage<{
   totalEnrolledCourses: number;
   recentCourses: Enrollment[];
 }>;
+
+export type ResumeAnalysis = {
+  personalInfo: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+  };
+  profileSummary?: string;
+  currentRole?: string;
+  experienceYears?: string;
+  skills: string[];
+  technicalSkills?: string[];
+  softSkills?: string[];
+  experience?: string[];
+  projects?: string[];
+  education?: string[];
+  strengths?: string[];
+  weaknesses?: string[];
+  missingSkills?: string[];
+  suggestedRoles?: string[];
+  recommendedCourses?: string[];
+  learningRoadmap?: string[];
+  interviewQuestions?: string[];
+  resumeScore: number;
+  improvementSuggestions?: string[];
+};
+
+export type ResumeAnalyzeResponse = ApiMessage<ResumeAnalysis>;
+
+export type LessonType = "video" | "interactive" | "quiz" | "article";
+
+export type CourseCurriculumModule = {
+  id: string;
+  title: string;
+  description?: string | null;
+  position: number;
+  lessons: {
+    id: string;
+    title: string;
+    description?: string | null;
+    lessonType: LessonType;
+    position: number;
+    xpReward: number;
+  }[];
+};
+
+export type CourseCurriculumResponse = ApiMessage<CourseCurriculumModule[]>;
+
+export type LessonDetail = {
+  id: string;
+  courseId: string;
+  moduleId: string;
+  moduleTitle?: string | null;
+  title: string;
+  description?: string | null;
+  lessonType: LessonType;
+  position: number;
+  xpReward: number;
+  videoUrl?: string | null;
+  articleContent?: string | null;
+  interactiveConfig?: unknown | null;
+  quizConfig?: unknown | null;
+};
+
+export type LessonDetailResponse = ApiMessage<LessonDetail>;
+
+export type Conversation = {
+  id: string;
+  participantIds: string[];
+  lastMessage: string | null;
+  lastMessageAt: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type ChatMessage = {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  isRead: boolean;
+  createdAt?: string;
+};

@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Course } from '../courses/entities/course.entity';
+import { CourseModuleEntity } from '../courses/entities/course-module.entity';
+import { Lesson, LessonType } from '../courses/entities/lesson.entity';
 import { Enrollment } from '../enrollments/entities/enrollment.entity';
 import { User } from '../users/entities/user.entity';
 
@@ -15,6 +17,12 @@ export class TeacherService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+
+    @InjectRepository(CourseModuleEntity)
+    private readonly courseModuleRepository: Repository<CourseModuleEntity>,
+
+    @InjectRepository(Lesson)
+    private readonly lessonRepository: Repository<Lesson>,
 
     @InjectRepository(Enrollment)
     private readonly enrollmentRepository: Repository<Enrollment>,
@@ -134,6 +142,113 @@ export class TeacherService {
         status: course.status,
         totalStudents,
       },
+    };
+  }
+
+  async seedTwoSumInteractiveLesson(courseId: string, user: User) {
+    await this.validateCourseOwnership(courseId, user);
+
+    const existing = await this.lessonRepository.findOne({
+      where: {
+        courseId,
+        lessonType: LessonType.INTERACTIVE,
+        title: 'Two Sum',
+      },
+      select: { id: true },
+    });
+    if (existing) {
+      return {
+        message: 'Two Sum interactive lesson already exists',
+        data: { lessonId: existing.id },
+      };
+    }
+
+    let module = await this.courseModuleRepository.findOne({
+      where: { courseId, title: 'Algorithms (Interactive)' },
+    });
+
+    if (!module) {
+      const maxPosition = await this.courseModuleRepository
+        .createQueryBuilder('m')
+        .select('MAX(m.position)', 'max')
+        .where('m.courseId = :courseId', { courseId })
+        .getRawOne<{ max: string | null }>();
+
+      module = this.courseModuleRepository.create({
+        courseId,
+        title: 'Algorithms (Interactive)',
+        description:
+          'Interactive algorithm lessons with visualizations + practice.',
+        position: Number(maxPosition?.max ?? 0) + 1,
+      });
+      module = await this.courseModuleRepository.save(module);
+    }
+
+    const interactiveConfig = {
+      visualType: 'array',
+      concept: {
+        title: 'Two Sum',
+        description:
+          'Given an array of numbers and a target, return indices of the two numbers that add up to target.\n\nGoal: learn the hash map approach visually (O(n)).',
+      },
+      hints: [
+        'Use a map to store value → index as you scan the array.',
+        'For each number x, check if (target - x) is already in the map.',
+        'Return the pair of indices when you find the complement.',
+      ],
+      steps: [
+        {
+          title: 'Start',
+          action: 'init',
+          payload: { nums: [2, 7, 11, 15], target: 9 },
+        },
+        {
+          title: 'i = 0 (num = 2)',
+          action: 'scan',
+          payload: { i: 0, num: 2, complement: 7, mapAfter: { 2: 0 } },
+        },
+        {
+          title: 'i = 1 (num = 7) → found complement 2',
+          action: 'found',
+          payload: { i: 1, num: 7, complement: 2, answer: [0, 1] },
+        },
+      ],
+      practice: {
+        language: 'javascript',
+        starterCode:
+          'function twoSum(nums, target) {\n  // TODO: return [i, j]\n}\n',
+        functionName: 'twoSum',
+        testCases: [
+          { input: { nums: [2, 7, 11, 15], target: 9 }, output: [0, 1] },
+          { input: { nums: [3, 2, 4], target: 6 }, output: [1, 2] },
+          { input: { nums: [3, 3], target: 6 }, output: [0, 1] },
+        ],
+      },
+      xp: { reward: 25 },
+    };
+
+    const maxLessonPosition = await this.lessonRepository
+      .createQueryBuilder('l')
+      .select('MAX(l.position)', 'max')
+      .where('l.moduleId = :moduleId', { moduleId: module.id })
+      .getRawOne<{ max: string | null }>();
+
+    const lesson = await this.lessonRepository.save(
+      this.lessonRepository.create({
+        courseId,
+        moduleId: module.id,
+        title: 'Two Sum',
+        description: 'Interactive lesson: visualize + code + test your solution.',
+        lessonType: LessonType.INTERACTIVE,
+        position: Number(maxLessonPosition?.max ?? 0) + 1,
+        interactiveConfig,
+        xpReward: 25,
+      }),
+    );
+
+    return {
+      message: 'Two Sum interactive lesson seeded successfully',
+      data: { moduleId: module.id, lessonId: lesson.id },
     };
   }
 

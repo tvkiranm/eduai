@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/page-header";
@@ -19,6 +19,14 @@ export default function TeacherCourseDetailsPage() {
   const course = useQuery({
     queryKey: ["teacher", "course", courseId],
     queryFn: () => api.teacher.courseDetails(courseId),
+  });
+
+  const seedTwoSum = useMutation({
+    mutationFn: () => api.teacher.seedTwoSumInteractive(courseId),
+    onSuccess: (res) => {
+      toast.success(res.message || "Seeded interactive lesson");
+    },
+    onError: (err) => toast.error(getErrorMessage(err)),
   });
 
   useEffect(() => {
@@ -94,6 +102,33 @@ export default function TeacherCourseDetailsPage() {
                 No thumbnail
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-base">Interactive lessons</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-[color:var(--color-muted-foreground)]">
+            <div>
+              Seed a ready-to-use interactive lesson inside this course: <span className="font-medium text-[color:var(--color-foreground)]">Two Sum</span>.
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={() => seedTwoSum.mutate()}
+                disabled={seedTwoSum.isPending}
+              >
+                {seedTwoSum.isPending ? "Adding..." : "Add Two Sum interactive lesson"}
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={`/teacher/courses/${courseId}/stats`}>View course stats</Link>
+              </Button>
+            </div>
+            {seedTwoSum.data?.data?.lessonId ? (
+              <div className="text-xs break-all">
+                Lesson created: {seedTwoSum.data.data.lessonId}
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       </div>

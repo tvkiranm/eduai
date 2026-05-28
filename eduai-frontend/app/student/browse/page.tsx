@@ -17,9 +17,18 @@ export default function StudentBrowseCoursesPage() {
     queryFn: () => api.courses.publicList(),
   });
 
+  const my = useQuery({
+    queryKey: ["student", "my-courses"],
+    queryFn: () => api.student.myCourses(),
+  });
+
   useEffect(() => {
     if (courses.isError) toast.error(getErrorMessage(courses.error));
   }, [courses.error, courses.isError]);
+
+  useEffect(() => {
+    if (my.isError) toast.error(getErrorMessage(my.error));
+  }, [my.error, my.isError]);
 
   const enroll = useMutation({
     mutationFn: (courseId: string) => api.enrollments.enroll(courseId),
@@ -35,6 +44,8 @@ export default function StudentBrowseCoursesPage() {
   if (courses.isError) return <EmptyState title="Failed to load courses" description="Please try again." />;
 
   const data = courses.data ?? [];
+  const enrollmentKnown = my.status === "success";
+  const enrolledIds = new Set((my.data?.data ?? []).map((e) => e.courseId));
 
   return (
     <div>
@@ -42,11 +53,16 @@ export default function StudentBrowseCoursesPage() {
 
       {data.length ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {data.map((c) => (
+          {data.map((c) => {
+            const isEnrolled = enrollmentKnown && enrolledIds.has(c.id);
+            return (
+            // Hide enroll button if already enrolled.
             <CourseCard
               key={c.id}
               course={c}
-              showEnroll
+              enrolled={isEnrolled}
+              detailsHref={isEnrolled ? `/student/courses/${c.id}` : `/courses/${c.id}`}
+              showEnroll={enrollmentKnown ? !isEnrolled : false}
               enrolling={enroll.isPending}
               onEnroll={(courseId) => {
                 if (c.price > 0) {
@@ -56,7 +72,8 @@ export default function StudentBrowseCoursesPage() {
                 enroll.mutate(courseId);
               }}
             />
-          ))}
+          );
+          })}
         </div>
       ) : (
         <EmptyState title="No courses found" />
